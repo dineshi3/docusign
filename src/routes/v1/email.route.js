@@ -9,9 +9,9 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 router.route('/receive').post(emailController.handleSendDocument);
 router.route('/signDocument').post(upload.single('file'), emailController.handleSignDocument);
-router.route('/docStatus').get(async (req, res) => {
-    const { companyId, ticketId } = req.query;
-    console.log('query',req.query)
+
+router.route('/docStatus').post(async (req, res) => {
+    const { companyId, ticketId } = req.body;
 
     try {
         const docDetails = await mongoService.getRecordByCompanyIdAndTicketId(companyId, ticketId);
