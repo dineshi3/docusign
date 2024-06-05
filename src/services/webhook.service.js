@@ -6,6 +6,8 @@ const config = require('../config/config');
 const logger = require('../config/logger');
 
 const templates = require('../templates');
+const mongoService = require('../services/mongodb.service')
+
 
 const { extractNameFromEmail } = require('./mail.service');
 
@@ -189,6 +191,10 @@ const sendCompletedEmail = async ({ data }) => {
       else logger.debug('Email sent successfully:', body);
     });
   }
+
+  
+  //Change status to completed in the mongoDB for the documentID
+  mongoService.updateStatusByDocId(documentId,'signed')
 };
 
 module.exports = {
