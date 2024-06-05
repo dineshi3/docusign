@@ -68,8 +68,8 @@ module.exports.getRecordByCompanyIdAndTicketId = async (companyId, ticketId) => 
         
         // Convert companyId and ticketId to strings
         const query = {
-            companyId: companyId.toString(),
-            ticketId: ticketId.toString()
+            'companyId': companyId.toString(),
+            'ticketId': ticketId.toString()
         };
 
         // Find document matching companyId and ticketId
