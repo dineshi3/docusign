@@ -58,15 +58,22 @@ module.exports.pushRecords = async (records) => {
     }
 };
 
-// Function to retrieve a document from MongoDB collection based on companyId and ticketId
+
 module.exports.getRecordByCompanyIdAndTicketId = async (companyId, ticketId) => {
     const client = new MongoClient(url, { useUnifiedTopology: true });
     try {
         await client.connect();
         const db = client.db(dbName);
         const collection = db.collection(collectionName);
+        
+        // Convert companyId and ticketId to strings
+        const query = {
+            companyId: companyId.toString(),
+            ticketId: ticketId.toString()
+        };
+
         // Find document matching companyId and ticketId
-        const document = await collection.findOne({ companyId: companyId, ticketId: ticketId });
+        const document = await collection.findOne(query);
         if (document) {
             console.log("Found document:", document);
             return document;
