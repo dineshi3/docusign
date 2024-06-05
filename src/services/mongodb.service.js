@@ -60,6 +60,7 @@ module.exports.pushRecords = async (records) => {
 
 
 module.exports.getRecordByCompanyIdAndTicketId = async (companyId, ticketId) => {
+    console.log('companyID and TicketID method'+companyId, ticketId)
     const client = new MongoClient(url, { useUnifiedTopology: true });
     try {
         await client.connect();
@@ -68,8 +69,8 @@ module.exports.getRecordByCompanyIdAndTicketId = async (companyId, ticketId) => 
         
         // Convert companyId and ticketId to strings
         const query = {
-            'companyId': companyId.toString(),
-            'ticketId': ticketId.toString()
+            'companyId': companyId,
+            'ticketId': ticketId
         };
 
         // Find document matching companyId and ticketId

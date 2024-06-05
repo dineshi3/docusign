@@ -15,7 +15,6 @@ const { errorConverter, errorHandler } = require('./middlewares/error');
 const ApiError = require('./utils/ApiError');
 const mongoService = require('./services/mongodb.service')
 
-
 const app = express();
 
 if (config.env !== 'test') {
@@ -66,7 +65,7 @@ app.use(errorConverter);
 // handle error
 app.use(errorHandler);
 
-mongoService.createDatabase();
+mongoService.createDatabase()
 
 
 module.exports = app;
