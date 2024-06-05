@@ -64,4 +64,6 @@ app.use(errorConverter);
 // handle error
 app.use(errorHandler);
 
+console.log('Doc Signer')
+
 module.exports = app;
