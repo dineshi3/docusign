@@ -207,6 +207,8 @@ const getEmailData = (emailData) => {
 
 const initiateSignDocument = async (requestData) => {
 
+  console.log("requestData",requestData)
+
   const emailData = getEmailData(requestData);
   const { subject = 'eSign PDF Request', fromUser, signers, attachment, fileName, companyId, ticketId } = emailData;
 console.log("emailData",emailData)
