@@ -209,8 +209,10 @@ const initiateSignDocument = async (requestData) => {
 
   const emailData = getEmailData(requestData);
   const { subject = 'eSign PDF Request', fromUser, signers, attachment, fileName, companyId, ticketId } = emailData;
-
+console.log("emailData",emailData)
   const docName = fileName.split('.')[0];
+  console.log("docName",docName)
+
   const metaDetails = {
     sender: {
       name: fromUser.signerName,
