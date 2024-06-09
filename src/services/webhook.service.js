@@ -92,7 +92,7 @@ const sendSignedEmail = async ({ data }) => {
     else logger.debug('Email sent successfully:', body);
   });
 
-  mongoService.updateEmailsById(documentId,requestData);
+  mongoService.updateEmailsById(data.documentId,requestData);
   return true;
 };
 
@@ -141,7 +141,7 @@ const sendSignDocumentEmail = async ({ data }) => {
       else logger.debug('Email sent successfully:', body);
     });
 
-    mongoService.updateEmailsById(documentId,requestConfig);
+    mongoService.updateEmailsById(data.documentId,requestConfig);
 
   }
 };
