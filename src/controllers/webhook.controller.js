@@ -2,7 +2,7 @@ const catchAsync = require('../utils/catchAsync');
 
 const logger = require('../config/logger');
 
-const { webhookService } = require('../services');
+const { webhookService, mongoService } = require('../services');
 
 const bindEvent = catchAsync(async (req, res) => {
   const { event, data, document } = req.body;
