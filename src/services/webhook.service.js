@@ -91,8 +91,8 @@ const sendSignedEmail = async ({ data }) => {
     if (error) logger.error(error);
     else logger.debug('Email sent successfully:', body);
   });
-
-  mongoService.updateEmailsById(data.documentId,requestData);
+  const { from, to, subject, html } = requestData;
+  mongoService.updateEmailsById(data.documentId,{ from, to, subject, html });
   return true;
 };
 
@@ -194,8 +194,10 @@ const sendCompletedEmail = async ({ data }) => {
       if (error) logger.error(error);
       else logger.debug('Email sent successfully:', body);
     });
-    if(user.isSender)
-      mongoService.updateEmailsById(documentId, requestConfig);
+    if(user.isSender){
+      const { from, to, subject, html } = requestConfig;
+      mongoService.updateEmailsById(documentId, { from, to, subject, html });
+    }
   }
 
   
