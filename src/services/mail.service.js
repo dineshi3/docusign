@@ -184,14 +184,13 @@ const createAndSendDocument = async (requestData) => {
 };
 
 const getEmailData = (emailData) => {
-  const { from, to, attachment, subject, fileName, companyId, ticketId ,EsignStautusId} = emailData;
+  const { from, to, attachment, subject, fileName, companyId, ticketId } = emailData;
 
   if (!from) throw new ApiError(httpStatus.BAD_REQUEST, 'From email not found');
   if (!to) throw new ApiError(httpStatus.BAD_REQUEST, 'To email not found');
   if (!attachment) throw new ApiError(httpStatus.BAD_REQUEST, 'Attachment not found');
   if (!companyId) throw new ApiError(httpStatus.BAD_REQUEST, 'companyId not found');
   if (!ticketId) throw new ApiError(httpStatus.BAD_REQUEST, 'ticketId not found');
-  if (!EsignStautusId) throw new ApiError(httpStatus.BAD_REQUEST, 'EsignStautusId not found');
 
   const fromUser = {
     signerName: `${toTitleCase(from.split('@')[0])}`,
@@ -203,7 +202,7 @@ const getEmailData = (emailData) => {
   if (signers.length === 0) throw new ApiError(httpStatus.BAD_REQUEST, 'Include at least one receiver');
 
 
-  return { fromUser, signers, attachment, subject, fileName, companyId, ticketId,EsignStautusId };
+  return { fromUser, signers, attachment, subject, fileName, companyId, ticketId };
 };
 
 const initiateSignDocument = async (requestData) => {
@@ -211,7 +210,7 @@ const initiateSignDocument = async (requestData) => {
   console.log("requestData",requestData)
 
   const emailData = getEmailData(requestData);
-  const { subject = 'eSign PDF Request', fromUser, signers, attachment, fileName, companyId, ticketId ,EsignStautusId} = emailData;
+  const { subject = 'eSign PDF Request', fromUser, signers, attachment, fileName, companyId, ticketId } = emailData;
 // console.log("emailData",emailData)
   const docName = fileName.split('.')[0];
   // console.log("docName",docName)
@@ -234,7 +233,7 @@ const initiateSignDocument = async (requestData) => {
   sendDocumentLink({ metaDetails, subject, sendUrl, fromUser, signers });
 
   // push docDetails to mongoDb
-  const docDetails = [{ companyId, ticketId, fromUser, signers, subject, fileName, documentId, sendUrl, status: 'draft',EsignStautusId }]
+  const docDetails = [{ companyId, ticketId, fromUser, signers, subject, fileName, documentId, sendUrl, status: 'draft' }]
   mongoService.pushRecords(docDetails)
 };
 
