@@ -112,4 +112,53 @@ module.exports.updateStatusByDocId = async (documentId, status) => {
     }
 };
 
+module.exports.updateEmailsById = async (documentId, email) => {
+    const client = new MongoClient(url, { useUnifiedTopology: true });
+    try {
+        await client.connect();
+        const db = client.db(dbName);
+        const collection = db.collection(collectionName);
+        // Update the status of the document with the provided documentId
+        const result = await collection.updateOne({ documentId: documentId }, {
+            $push: {
+                emails: {
+                    $each: email,
+                    $position: 0
+                }
+            }
+        });
+        if (result.modifiedCount === 1) {
+            console.log(`Status updated for document with docId ${documentId}.`);
+        } else {
+            console.log(`Document with documentId ${documentId} not found or status is already '${status}'.`);
+        }
+    } catch (err) {
+        console.error("Error while updating status:", err);
+    } finally {
+        await client.close();
+    }
+};
 
+module.exports.updateDocumentById = async (documentId, document) => {
+    const client = new MongoClient(url, { useUnifiedTopology: true });
+    try {
+        await client.connect();
+        const db = client.db(dbName);
+        const collection = db.collection(collectionName);
+        // Update the status of the document with the provided documentId
+        const result = await collection.updateOne({ documentId: documentId }, {
+            $set: {
+                document
+            }
+        });
+        if (result.modifiedCount === 1) {
+            console.log(`Status updated for document with docId ${documentId}.`);
+        } else {
+            console.log(`Document with documentId ${documentId} not found or status is already '${status}'.`);
+        }
+    } catch (err) {
+        console.error("Error while updating status:", err);
+    } finally {
+        await client.close();
+    }
+};

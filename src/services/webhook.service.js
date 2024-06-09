@@ -92,6 +92,7 @@ const sendSignedEmail = async ({ data }) => {
     else logger.debug('Email sent successfully:', body);
   });
 
+  mongoService.updateEmailsById(documentId,requestData);
   return true;
 };
 
@@ -139,6 +140,9 @@ const sendSignDocumentEmail = async ({ data }) => {
       if (error) logger.error(error);
       else logger.debug('Email sent successfully:', body);
     });
+
+    mongoService.updateEmailsById(documentId,requestConfig);
+
   }
 };
 
@@ -156,7 +160,7 @@ const sendCompletedEmail = async ({ data }) => {
     users.push(...signerDetails);
 
   const ccuser = ccDetails[0];
-  if (ccuser) users.push({ signerEmail: ccuser.emailAddress, signerName: metaData?.sender?.name || extractNameFromEmail(ccuser.emailAddress) });
+  if (ccuser) users.push({ signerEmail: ccuser.emailAddress, signerName: metaData?.sender?.name || extractNameFromEmail(ccuser.emailAddress), isSender: true });
 
   const documentPrefix = `${metaData?.document.name ? `${metaData?.document.name}_` : ''}`;
   for (let user of users) {
@@ -190,6 +194,8 @@ const sendCompletedEmail = async ({ data }) => {
       if (error) logger.error(error);
       else logger.debug('Email sent successfully:', body);
     });
+    if(user.isSender)
+      mongoService.updateEmailsById(documentId, requestConfig);
   }
 
   

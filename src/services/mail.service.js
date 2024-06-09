@@ -138,6 +138,9 @@ const sendDocumentLink = async ({ subject, sendUrl, fromUser, signers, metaDetai
     if (error) logger.error(error);
     else logger.info('Email sent successfully:', body);
   });
+
+  return emailConfig;
+
 };
 
 const createSenderIdentity = async (sender) => {
@@ -198,7 +201,7 @@ const getEmailData = (emailData) => {
     signerEmail: from
   };
 
-  const signers = [{ signerName: toTitleCase(to.split('@')[0]), signerEmail: to }]
+  const signers = to.split(',').map(mail => mail.trim()).map(mail => ({ signerName: toTitleCase(mail.split('@')[0]), signerEmail: mail }))
 
   if (signers.length === 0) throw new ApiError(httpStatus.BAD_REQUEST, 'Include at least one receiver');
 
@@ -231,10 +234,10 @@ const initiateSignDocument = async (requestData) => {
 
   const { documentId, sendUrl } = await createEmbeddedDocument({ ...emailData, metaDetails, attachment: { name: attachment.originalname, 'content-type': attachment.mimetype }, attachmentData: attachment.buffer });
 
-  sendDocumentLink({ metaDetails, subject, sendUrl, fromUser, signers });
+  const mailData = await sendDocumentLink({ metaDetails, subject, sendUrl, fromUser, signers });
 
   // push docDetails to mongoDb
-  const docDetails = [{ companyId, ticketId, fromUser, signers, subject, fileName, documentId, sendUrl, status: 'draft',EsignStautusId }]
+  const docDetails = [{ companyId, ticketId, fromUser, signers, subject, fileName, documentId, sendUrl, status: 'draft',EsignStautusId, emails: [mailData] }]
   mongoService.pushRecords(docDetails)
 };
 

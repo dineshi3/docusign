@@ -5,7 +5,7 @@ const logger = require('../config/logger');
 const { webhookService } = require('../services');
 
 const bindEvent = catchAsync(async (req, res) => {
-  const { event, data } = req.body;
+  const { event, data, document } = req.body;
 
   try {
     const parsed = JSON.parse(data.documentDescription);
@@ -22,8 +22,8 @@ const bindEvent = catchAsync(async (req, res) => {
     };
   }
 
-  logger.info('********** Webhook Bind **********');
-  logger.info(JSON.stringify(req.body));
+  console.log('********** Webhook Bind **********');
+  console.log(JSON.stringify(req.body));
 
   switch (event.eventType) {
     case 'Signed':
@@ -38,6 +38,8 @@ const bindEvent = catchAsync(async (req, res) => {
     default:
       break;
   }
+  if(document)
+    mongoService.updateDocumentById(data.documentId, document);
 
   res.json({ status: true, message: 'Success' });
 });
