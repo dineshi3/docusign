@@ -122,7 +122,7 @@ module.exports.updateEmailsById = async (documentId, email) => {
         const result = await collection.updateOne({ documentId: documentId }, {
             $push: {
                 emails: {
-                    $each: email,
+                    $each: [email],
                     $position: 0
                 }
             }
