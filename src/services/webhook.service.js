@@ -93,7 +93,7 @@ const sendSignedEmail = async ({ data }) => {
   });
   const { from, to, subject, html } = requestData;
   const documentId = data.documentId;
-  const { companyId, ticketId } = mongoService.getRecordByDocumentId(documentId);
+  const { companyId, ticketId } = await mongoService.getRecordByDocumentId(documentId);
   mongoService.insertEmail({ from, to, subject, html, documentId, companyId, ticketId });
   return true;
 };
@@ -144,7 +144,7 @@ const sendSignDocumentEmail = async ({ data }) => {
     });
 
     const documentId = data.documentId;
-    const { companyId, ticketId } = mongoService.getRecordByDocumentId(documentId);
+    const { companyId, ticketId } = await mongoService.getRecordByDocumentId(documentId);
     mongoService.insertEmail({ ...requestConfig, documentId, companyId, ticketId });
 
   }
@@ -201,7 +201,7 @@ const sendCompletedEmail = async ({ data }) => {
     if(user.isSender){
       const { from, to, subject, html } = requestConfig;
       const documentId = data.documentId;
-      const { companyId, ticketId } = mongoService.getRecordByDocumentId(documentId);
+      const { companyId, ticketId } = await mongoService.getRecordByDocumentId(documentId);
       mongoService.insertEmail({ from, to, subject, html, documentId, companyId, ticketId });
     }
   }
