@@ -11,10 +11,10 @@ router.route('/receive').post(emailController.handleSendDocument);
 router.route('/signDocument').post(upload.single('file'), emailController.handleSignDocument);
 
 router.route('/docStatus').post(async (req, res) => {
-    const { companyId, ticketId } = req.body;
+    const { companyId, ticketId,EsignStautusId } = req.body;
 
     try {
-        const docDetails = await mongoService.getRecordByCompanyIdAndTicketId(companyId, ticketId);
+        const docDetails = await mongoService.getRecordByCompanyIdAndTicketId(companyId, ticketId,EsignStautusId);
         res.status(200).json(docDetails);
     } catch (err) {
         console.error("Error while retrieving document details:", err);
