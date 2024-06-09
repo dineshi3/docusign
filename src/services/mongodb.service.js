@@ -58,6 +58,21 @@ module.exports.pushRecords = async (records) => {
     }
 };
 
+module.exports.insertEmail = async (email) => {
+    const client = new MongoClient(url, { useUnifiedTopology: true });
+    try {
+        await client.connect();
+        const db = client.db(dbName);
+        const collection = db.collection('eSignEmail');
+        const result = await collection.insertOne({...email, createAt: new Date().toISOString()});
+        console.log(`${result.insertedCount} record(s) inserted into collection '${collectionName}'.`);
+    } catch (err) {
+        console.error("Error while pushing records:", err);
+    } finally {
+        await client.close();
+    }
+};
+
 
 module.exports.getRecordByCompanyIdAndTicketId = async (companyId, ticketId) => {
     console.log('companyID and TicketID method'+companyId, ticketId)
@@ -65,7 +80,7 @@ module.exports.getRecordByCompanyIdAndTicketId = async (companyId, ticketId) => 
     try {
         await client.connect();
         const db = client.db(dbName);
-        const collection = db.collection(collectionName);
+        const collection = db.collection('eSignEmail');
         
         // Convert companyId and ticketId to strings
         const query = {
@@ -74,8 +89,7 @@ module.exports.getRecordByCompanyIdAndTicketId = async (companyId, ticketId) => 
         };
 
         // Find document matching companyId and ticketId
-        const document = await collection.find(query).toArray();
-        document.ne
+        const document = await collection.find(query).sort({ createdAt: -1 }).toArray();
         if (document) {
             console.log("Found document:", document);
             return document;
@@ -86,6 +100,33 @@ module.exports.getRecordByCompanyIdAndTicketId = async (companyId, ticketId) => 
     } catch (err) {
         console.error("Error while retrieving record:", err);
         return null;
+    } finally {
+        await client.close();
+    }
+};
+
+module.exports.getRecordByDocumentId = async (documentId) => {
+    const client = new MongoClient(url, { useUnifiedTopology: true });
+    try {
+        await client.connect();
+        const db = client.db(dbName);
+        const collection = db.collection(collectionName);
+        
+        // Convert companyId and ticketId to strings
+        const query = { documentId };
+
+        // Find document matching companyId and ticketId
+        const document = await collection.findOne(query);
+        if (document) {
+            console.log("Found document:", document);
+            return document;
+        } else {
+            console.log("No records available for the provided companyId and ticketId.");
+            return {  };
+        }
+    } catch (err) {
+        console.error("Error while retrieving record:", err);
+        return {  };
     } finally {
         await client.close();
     }
