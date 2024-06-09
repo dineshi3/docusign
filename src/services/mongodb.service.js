@@ -128,12 +128,12 @@ module.exports.updateEmailsById = async (documentId, email) => {
             }
         });
         if (result.modifiedCount === 1) {
-            console.log(`Status updated for document with docId ${documentId}.`);
+            console.log(`Email updated for document with docId ${documentId}.`);
         } else {
-            console.log(`Document with documentId ${documentId} not found or status is already '${status}'.`);
+            console.log(`Document with documentId ${documentId} not found`);
         }
     } catch (err) {
-        console.error("Error while updating status:", err);
+        console.error("Error while updating email:", err);
     } finally {
         await client.close();
     }
@@ -152,12 +152,12 @@ module.exports.updateDocumentById = async (documentId, document) => {
             }
         });
         if (result.modifiedCount === 1) {
-            console.log(`Status updated for document with docId ${documentId}.`);
+            console.log(`Document updated with docId ${documentId}.`);
         } else {
-            console.log(`Document with documentId ${documentId} not found or status is already '${status}'.`);
+            console.log(`Document with documentId ${documentId} not found`);
         }
     } catch (err) {
-        console.error("Error while updating status:", err);
+        console.error("Error while updating Document:", err);
     } finally {
         await client.close();
     }
