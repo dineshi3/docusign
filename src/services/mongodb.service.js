@@ -74,7 +74,8 @@ module.exports.getRecordByCompanyIdAndTicketId = async (companyId, ticketId) => 
         };
 
         // Find document matching companyId and ticketId
-        const document = await collection.find(query);
+        const document = await collection.find(query).toArray();
+        document.ne
         if (document) {
             console.log("Found document:", document);
             return document;
