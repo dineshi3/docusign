@@ -82,7 +82,7 @@ const createEmbeddedDocument = async ({ attachmentData, subject, attachment, fro
   data.append('disableEmails', 'true');
   data.append('Locale', 'EN');
   data.append('RedirectUrl', `${config.website.host}/e-sign/marker-complete`);
-  data.append('Message', JSON.stringify(metaDetails));
+  data.append('Message', '');
   data.append('EnableSigningOrder', 'false');
   data.append('senderDetail.name', fromUser.signerName);
   data.append('senderDetail.emailAddress', fromUser.signerEmail);

@@ -74,13 +74,13 @@ module.exports.insertEmail = async (email) => {
 };
 
 
-module.exports.setDocumentLink = async ({documentId, documentLink}) => {
+module.exports.setDocumentLink = async ({documentId, signers}) => {
     const client = new MongoClient(url, { useUnifiedTopology: true });
     try {
         await client.connect();
         const db = client.db(dbName);
         const collection = db.collection(collectionName);
-        const result = await collection.updateOne({ documentId }, { $set: { documentLink } });
+        await collection.updateOne({ documentId }, { $set: { documentLink: signers[0]?.signLink, signers } });
     } catch (err) {
         console.error("Error while setting doc link:", err);
     } finally {

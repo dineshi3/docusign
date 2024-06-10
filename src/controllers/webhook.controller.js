@@ -1,6 +1,6 @@
 const catchAsync = require('../utils/catchAsync');
 
-const logger = require('../config/logger');
+const { toTitleCase } = require('../utils');
 
 const { webhookService, mongoService } = require('../services');
 
@@ -8,8 +8,27 @@ const bindEvent = catchAsync(async (req, res) => {
   const { event, data, document } = req.body;
 
   try {
-    const parsed = JSON.parse(data.documentDescription);
-    data.metaData = parsed;
+    const data = await mongoService.getRecordByDocumentId(data.documentId);
+    if(data?.fromUser) {
+      const { fromUser, fileName, subject } = data;
+      const docName = fileName.split('.')[0];
+      const metaDetails = {
+        sender: {
+          name: fromUser.signerName,
+          email: fromUser.signerEmail,
+        },
+        document: {
+          name: toTitleCase(docName),
+        },
+        email: {
+          subject,
+        },
+      };
+      data.metaData = metaDetails;
+    } else {
+      const parsed = JSON.parse(data.documentDescription);
+      data.metaData = parsed;
+    }
   } catch (error) {
     data.metaData = {
       sender: {

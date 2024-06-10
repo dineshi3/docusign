@@ -6,8 +6,7 @@ const config = require('../config/config');
 const logger = require('../config/logger');
 
 const templates = require('../templates');
-const mongoService = require('../services/mongodb.service')
-
+const mongoService = require('../services/mongodb.service');
 
 const { extractNameFromEmail } = require('./mail.service');
 
@@ -68,9 +67,12 @@ const sendSignedEmail = async ({ data }) => {
 
   if (!signer) return;
 
-  const documentLink = await getViewDocumentLink({ documentId: data.documentId, signerEmail: signer.signerEmail });
+  const documentId = data.documentId;
+  const { companyId, ticketId, signers } = await mongoService.getRecordByDocumentId(documentId);
 
   const documentPrefix = `${metaData?.document.name ? `${metaData?.document.name}_` : ''}`;
+
+  const signLink = signers?.filter((item) => item.signerEmail == signer.signerEmail)?.[0].signLink;
 
   const requestData = {
     from: `Magicsign <sign@${config.mailgun.emailDomain}>`,
@@ -79,7 +81,7 @@ const sendSignedEmail = async ({ data }) => {
     html: templates.signedDocumentTemplate({
       ...metaData,
       ...data,
-      documentLink: `${config.website.host}/e-sign/?${documentLink.split('?')[1]}}`,
+      documentLink: `${config.website.host}/e-sign/?${signLink ? signLink.split('?')[1] : ''}}`,
     }),
     attachment: new mailgun.Attachment({
       data: signedDocumentData,
@@ -92,14 +94,15 @@ const sendSignedEmail = async ({ data }) => {
     else logger.debug('Email sent successfully:', body);
   });
   const { from, to, subject, html } = requestData;
-  const documentId = data.documentId;
-  const { companyId, ticketId } = await mongoService.getRecordByDocumentId(documentId);
   mongoService.insertEmail({ from, to, subject, html, documentId, companyId, ticketId });
   return true;
 };
 
 const sendSignDocumentEmail = async ({ data }) => {
   const { signerDetails, ccDetails, metaData } = data;
+  const documentId = data.documentId;
+  const { companyId, ticketId } = await mongoService.getRecordByDocumentId(documentId);
+
   for (let signer of signerDetails) {
     const embeddedSignLinkResponse = await axios.get(
       `${config.boldsign.host}/v1/document/getEmbeddedSignLink?documentId=${data.documentId}&signerEmail=${signer.signerEmail}&redirectUrl=${config.website.host}/e-sign/complete`,
@@ -120,7 +123,7 @@ const sendSignDocumentEmail = async ({ data }) => {
     const requestConfig = {
       from: 'Magicsign <sign@esign-inc.vakilsearch.com>',
       to: signer.signerEmail,
-      subject: `Review and Sign ${metaData?.document?.name || messageTitle}`,
+      subject: `Review and Sign ${metaData?.document?.name || data.messageTitle}`,
       html: templates.signTemplate({
         ...metaData,
         signLink: `${config.website.host}/e-sign/?${signLink.split('?')[1]}}`,
@@ -143,11 +146,10 @@ const sendSignDocumentEmail = async ({ data }) => {
       else logger.debug('Email sent successfully:', body);
     });
 
-    const documentId = data.documentId;
-    const { companyId, ticketId } = await mongoService.getRecordByDocumentId(documentId);
+    signer.signLink = signLink;
     mongoService.insertEmail({ ...requestConfig, documentId, companyId, ticketId });
-    mongoService.setDocumentLink({ documentId, documentLink: signLink });
   }
+  mongoService.setDocumentLink({ documentId, signers: signerDetails });
 };
 
 const sendCompletedEmail = async ({ data }) => {
@@ -160,11 +162,15 @@ const sendCompletedEmail = async ({ data }) => {
 
   const users = [];
 
-  if(signerDetails.length > 1)
-    users.push(...signerDetails);
+  if (signerDetails.length > 1) users.push(...signerDetails);
 
   const ccuser = ccDetails[0];
-  if (ccuser) users.push({ signerEmail: ccuser.emailAddress, signerName: metaData?.sender?.name || extractNameFromEmail(ccuser.emailAddress), isSender: true });
+  if (ccuser)
+    users.push({
+      signerEmail: ccuser.emailAddress,
+      signerName: metaData?.sender?.name || extractNameFromEmail(ccuser.emailAddress),
+      isSender: true,
+    });
 
   const documentPrefix = `${metaData?.document.name ? `${metaData?.document.name}_` : ''}`;
   const documentLink = await mongoService.getDocumentLink({ documentId });
@@ -179,7 +185,9 @@ const sendCompletedEmail = async ({ data }) => {
           ...metaData.document,
           ...data,
           signerDetails,
-          documentLink: `${config.website.host}/e-sign/?${documentLink ? documentLink.split('?')[1] : `documentId=${data.documentId}`}`,
+          documentLink: `${config.website.host}/e-sign/?${
+            documentLink ? documentLink.split('?')[1] : `documentId=${data.documentId}`
+          }`,
         },
         fromUser: user,
       }),
@@ -199,7 +207,7 @@ const sendCompletedEmail = async ({ data }) => {
       if (error) logger.error(error);
       else logger.debug('Email sent successfully:', body);
     });
-    if(user.isSender){
+    if (user.isSender) {
       const { from, to, subject, html } = requestConfig;
       const documentId = data.documentId;
       const { companyId, ticketId } = await mongoService.getRecordByDocumentId(documentId);
@@ -207,9 +215,8 @@ const sendCompletedEmail = async ({ data }) => {
     }
   }
 
-  
   //Change status to completed in the mongoDB for the documentID
-  mongoService.updateStatusByDocId(documentId,'signed')
+  mongoService.updateStatusByDocId(documentId, 'signed');
 };
 
 module.exports = {
