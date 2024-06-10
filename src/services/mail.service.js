@@ -237,7 +237,7 @@ const initiateSignDocument = async (requestData) => {
   const mailData = await sendDocumentLink({ metaDetails, subject, sendUrl, fromUser, signers });
 
   // push docDetails to mongoDb
-  const docDetails = [{ companyId, ticketId, fromUser, signers, subject, fileName, documentId, sendUrl, status: 'draft',EsignStautusId }];
+  const docDetails = [{ companyId, ticketId, fromUser, signers, subject, fileName, documentId, status: 'draft',EsignStautusId }];
   mongoService.pushRecords(docDetails);
   mongoService.insertEmail({...mailData, companyId, ticketId, documentId});
 };

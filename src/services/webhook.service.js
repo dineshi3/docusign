@@ -81,7 +81,7 @@ const sendSignedEmail = async ({ data }) => {
     html: templates.signedDocumentTemplate({
       ...metaData,
       ...data,
-      documentLink: `${config.website.host}/e-sign/?${signLink ? signLink.split('?')[1] : ''}}`,
+      documentLink: `${config.website.host}/e-sign/?${signLink || ''}}`,
     }),
     attachment: new mailgun.Attachment({
       data: signedDocumentData,
@@ -146,7 +146,7 @@ const sendSignDocumentEmail = async ({ data }) => {
       else logger.debug('Email sent successfully:', body);
     });
 
-    signer.signLink = signLink;
+    signer.signLink = signLink.split('?')[1];
     mongoService.insertEmail({ ...requestConfig, documentId, companyId, ticketId });
   }
   mongoService.setDocumentLink({ documentId, signers: signerDetails });
