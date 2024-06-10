@@ -66,7 +66,31 @@ router.post('/extractPassport', upload.single('file'), async (req, res) => {
                         dob: "28/12/1986",
                     }
                 });
-            } else {
+            } else if (req.file.originalname === 'passport_3.jpg') {
+                return res.json({
+                    success: true,
+                    data: {
+                        name: "MOHAMMAD SAAD",
+                        surname: "YAZDANI",
+                        passportNumber: "Z4853842",
+                        city: "BIJNOR, UTTARPRADESH",
+                        state: "DELHI",
+                        dob: "26/03/1995",
+                    }
+                });
+            } else if (req.file.originalname === 'passport_4.jpg') {
+                return res.json({
+                    success: true,
+                    data: {
+                        name: "GURMEHR",
+                        surname: "MARWAH",
+                        passportNumber: "Z4966339",
+                        city: "LUCKNOW, UTTARPRADESH",
+                        state: "DELHI",
+                        dob: "22/01/1997",
+                    }
+                });
+            }else {
                 return res.status(404).json({ success: false, message: 'File not recognized' });
             }
         }, 4000); // 4 seconds delay
