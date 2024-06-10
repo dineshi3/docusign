@@ -90,7 +90,7 @@ const createEmbeddedDocument = async ({ attachmentData, subject, attachment, fro
   signers.forEach((signUser, index) => {
     data.append(`Signers[${index}][Name]`, signUser.signerName);
     data.append(`Signers[${index}][EmailAddress]`, signUser.signerEmail);
-    data.append(`Signers[${index}][PrivateMessage]`, subject);
+    // data.append(`Signers[${index}][PrivateMessage]`, subject);
   });
 
   data.append(`CC[0][Name]`, fromUser.signerName);

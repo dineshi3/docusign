@@ -9,9 +9,9 @@ const bindEvent = catchAsync(async (req, res) => {
   const { event, data, document } = req.body;
 
   try {
-    const data = await mongoService.getRecordByDocumentId(data.documentId);
-    if(data?.fromUser) {
-      const { fromUser, fileName, subject } = data;
+    const mongoData = await mongoService.getRecordByDocumentId(data.documentId);
+    if(mongoData?.fromUser) {
+      const { fromUser, fileName, subject } = mongoData;
       const docName = fileName.split('.')[0];
       const metaDetails = {
         sender: {
@@ -34,8 +34,8 @@ const bindEvent = catchAsync(async (req, res) => {
     console.error(error);
     data.metaData = {
       sender: {
-        senderName: extractNameFromEmail(data.ccDetails[0]?.emailAddress),
-        senderEmail: data.ccDetails[0]?.emailAddress,
+        name: extractNameFromEmail(data.ccDetails[0]?.emailAddress),
+        email: data.ccDetails[0]?.emailAddress,
       },
       document: {
         name: data.messageTitle,

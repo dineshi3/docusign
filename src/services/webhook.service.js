@@ -186,7 +186,7 @@ const sendCompletedEmail = async ({ data }) => {
           ...data,
           signerDetails,
           documentLink: `${config.website.host}/e-sign/?${
-            documentLink ? documentLink.split('?')[1] : `documentId=${data.documentId}`
+            documentLink || `documentId=${data.documentId}`
           }`,
         },
         fromUser: user,
