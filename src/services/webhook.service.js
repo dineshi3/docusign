@@ -167,7 +167,7 @@ const sendCompletedEmail = async ({ data }) => {
   if (ccuser) users.push({ signerEmail: ccuser.emailAddress, signerName: metaData?.sender?.name || extractNameFromEmail(ccuser.emailAddress), isSender: true });
 
   const documentPrefix = `${metaData?.document.name ? `${metaData?.document.name}_` : ''}`;
-  const documentLink = mongoService.getDocumentLink({ documentId });
+  const documentLink = await mongoService.getDocumentLink({ documentId });
   for (let user of users) {
     const requestConfig = {
       from: `Magicsign <sign@${config.mailgun.emailDomain}>`,
