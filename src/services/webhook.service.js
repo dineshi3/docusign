@@ -146,7 +146,7 @@ const sendSignDocumentEmail = async ({ data }) => {
     const documentId = data.documentId;
     const { companyId, ticketId } = await mongoService.getRecordByDocumentId(documentId);
     mongoService.insertEmail({ ...requestConfig, documentId, companyId, ticketId });
-
+    mongoService.setDocumentLink({ documentId, documentLink: signLink });
   }
 };
 
@@ -167,6 +167,7 @@ const sendCompletedEmail = async ({ data }) => {
   if (ccuser) users.push({ signerEmail: ccuser.emailAddress, signerName: metaData?.sender?.name || extractNameFromEmail(ccuser.emailAddress), isSender: true });
 
   const documentPrefix = `${metaData?.document.name ? `${metaData?.document.name}_` : ''}`;
+  const documentLink = mongoService.getDocumentLink({ documentId });
   for (let user of users) {
     const requestConfig = {
       from: `Magicsign <sign@${config.mailgun.emailDomain}>`,
@@ -178,7 +179,7 @@ const sendCompletedEmail = async ({ data }) => {
           ...metaData.document,
           ...data,
           signerDetails,
-          documentLink: `${config.website.host}/e-sign/?documentId=${data.documentId}`,
+          documentLink: `${config.website.host}/e-sign/?${documentLink ? documentLink.split('?')[1] : `documentId=${data.documentId}`}`,
         },
         fromUser: user,
       }),

@@ -64,10 +64,42 @@ module.exports.insertEmail = async (email) => {
         await client.connect();
         const db = client.db(dbName);
         const collection = db.collection('eSignEmail');
-        const result = await collection.insertOne({...email, createAt: new Date().toISOString()});
+        const result = await collection.insertOne({...email , createAt: new Date().toUTCString()});
         console.log(`${result.insertedCount} record(s) inserted into collection '${collectionName}'.`);
     } catch (err) {
         console.error("Error while pushing records:", err);
+    } finally {
+        await client.close();
+    }
+};
+
+
+module.exports.setDocumentLink = async ({documentId, documentLink}) => {
+    const client = new MongoClient(url, { useUnifiedTopology: true });
+    try {
+        await client.connect();
+        const db = client.db(dbName);
+        const collection = db.collection(collectionName);
+        const result = await collection.updateOne({ documentId }, { $set: { documentLink } });
+    } catch (err) {
+        console.error("Error while setting doc link:", err);
+    } finally {
+        await client.close();
+    }
+};
+
+module.exports.getDocumentLink = async ({documentId}) => {
+    const client = new MongoClient(url, { useUnifiedTopology: true });
+    try {
+        await client.connect();
+        const db = client.db(dbName);
+        const collection = db.collection(collectionName);
+        const result = await collection.findOne({ documentId });
+        if(result)
+            return result.documentLink;
+        return result;
+    } catch (err) {
+        console.error("Error while fetching doc link:", err);
     } finally {
         await client.close();
     }
@@ -91,7 +123,6 @@ module.exports.getRecordByCompanyIdAndTicketId = async (companyId, ticketId) => 
         // Find document matching companyId and ticketId
         const document = await collection.find(query).sort({ _id: -1 }).toArray();
         if (document) {
-            console.log("Found document:", document);
             return document;
         } else {
             console.log("No records available for the provided companyId and ticketId.");
@@ -118,7 +149,6 @@ module.exports.getRecordByDocumentId = async (documentId) => {
         // Find document matching companyId and ticketId
         const document = await collection.findOne(query);
         if (document) {
-            console.log("Found document:", document);
             return document;
         } else {
             console.log("No records available for the provided companyId and ticketId.");
