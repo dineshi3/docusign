@@ -3,6 +3,7 @@ const catchAsync = require('../utils/catchAsync');
 const { toTitleCase } = require('../utils');
 
 const { webhookService, mongoService } = require('../services');
+const { extractNameFromEmail } = require('../services/mail.service');
 
 const bindEvent = catchAsync(async (req, res) => {
   const { event, data, document } = req.body;
@@ -30,6 +31,7 @@ const bindEvent = catchAsync(async (req, res) => {
       data.metaData = parsed;
     }
   } catch (error) {
+    console.error(error);
     data.metaData = {
       sender: {
         senderName: extractNameFromEmail(data.ccDetails[0]?.emailAddress),
