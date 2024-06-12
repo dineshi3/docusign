@@ -32,17 +32,13 @@ router.route('/docStatus').post(async (req, res) => {
 // Define the route with multer middleware to handle file uploads
 router.post('/extractPassport', upload.single('file'), async (req, res) => {
     try {
-        // Check if the file was uploaded
-        if (!req.file) {
-            return res.status(400).send('No file uploaded');
-        }
 
-        console.log(`Uploaded filename: ${req.file.originalname}`);
+        console.log(`Uploaded filename: ${req.body.file}`);
 
         // Delay for at least 4 seconds
         setTimeout(() => {
             // Send the response based on the uploaded file's name
-            if (req.file.originalname === 'passport_1.jpg') {
+            if (req.body.file === 'passport_1.jpg') {
                 return res.json({
                     success: true,
                     data: {
@@ -54,7 +50,7 @@ router.post('/extractPassport', upload.single('file'), async (req, res) => {
                         dob: "27/09/1988",
                     }
                 });
-            } else if (req.file.originalname === 'passport_2.jpg') {
+            } else if (req.body.file === 'passport_2.jpg') {
                 return res.json({
                     success: true,
                     data: {
@@ -66,7 +62,7 @@ router.post('/extractPassport', upload.single('file'), async (req, res) => {
                         dob: "28/12/1986",
                     }
                 });
-            } else if (req.file.originalname === 'passport_3.jpg') {
+            } else if (req.body.file === 'passport_3.jpg') {
                 return res.json({
                     success: true,
                     data: {
@@ -78,7 +74,7 @@ router.post('/extractPassport', upload.single('file'), async (req, res) => {
                         dob: "26/03/1995",
                     }
                 });
-            } else if (req.file.originalname === 'passport_4.jpg') {
+            } else if (req.body.file === 'passport_4.jpg') {
                 return res.json({
                     success: true,
                     data: {
